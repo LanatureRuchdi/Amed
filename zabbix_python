@@ -1,0 +1,65 @@
+import requests
+import json
+
+url = "http://192.168.126.129/zabbix/api_jsonrpc.php"
+
+# fonction permettant de creer un jeton.
+
+def jeton ():
+    payload = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"user.login\",\n    \"params\": {\n        \"user\": \"Admin\",\n        \"password\": \"zabbix\"\n    },\n    \"id\": 1,\n    \"auth\": null\n}"
+    headers = {'content-type': 'application/json'}
+
+    response = requests.request("POST", url, data=payload, headers=headers)
+
+    # print(response.text)
+    return(response.text)
+
+print(jeton ())
+
+# conversion du JSON en dictionnaire en Python
+python_obj = json.loads(jeton())
+# print("la valeur du jeton est:")
+
+# print (python_obj["result"])
+################################################################################
+# fonction pour recuperer l'identifiant. 
+
+def id ():
+    payload = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"host.get\",\n    \"params\": {\n        \"output\": [\n            \"hostid\",\n            \"host\"\n        ]\n    },\n    \"id\": 2,\n    \"auth\": \"print(jeton ())}"
+    headers = {'content-type': 'application/json'}
+
+    resultat = requests.request("POST", url, data=payload, headers=headers)
+# print(response.text)
+    return(resultat.text)
+print(id())
+# identifiant = json.loads(id())
+
+# print (identifiant["hostid"])
+
+#######################################################################################
+
+#fonction permettant de recuperer l'item
+
+def item ():
+    payload = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"item.get\",\n    \"params\": {\n        \"output\": [\"itemid\",\n\t\t\t\t\t\t\t\t\t\n\t\t\t\t\t\t\t\t\t\"name\"],\n\t\t\t\t\t\t\t\t\t\n        \"hostids\": \"10254\",\n        \"search\": {\n            \n\t\t\t\t\t \"key_\": \"vfs.fs.size[/,free]\"\n\t\t\t\t\t \n\t\t\t\t\t\n        }\n       \n    },\n    \"auth\":\"71daf1505b56b2a925022b438f8bd162\",\n    \"id\": 1\n}"
+    headers = {'content-type': 'application/json'}
+
+    element = requests.request("POST", url, data=payload, headers=headers)
+    return(element.text)
+print(item())    
+
+# Utilisation de TREND.GET pour la Récuperation
+
+def disqueDur ():
+    payload = "{\n    \"jsonrpc\": \"2.0\",\n    \"method\": \"trend.get\",\n    \"params\": {\n        \"output\": [\"value_min\"],\n        \"history\":0,\n        \"itemids\": \"28293\",\n        \"sortfield\": \"clock\",\n        \"sortorder\": \"DESC\",\n\t\t\t\t\"limit\": 1\n      \n    },\n    \"auth\": \"71daf1505b56b2a925022b438f8bd162\",\n    \"id\": 1\n}\n"
+    headers = {'content-type': 'application/json'}
+
+    valeureFinale = requests.request("POST", url, data=payload, headers=headers)
+    return(valeureFinale.text)
+
+print(disqueDur())
+
+Valeure = json.loads(disqueDur())
+
+
+print (Valeure["result"])
